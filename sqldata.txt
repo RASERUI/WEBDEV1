@@ -1,0 +1,549 @@
+SELECT DATE_TRUNC('month', f.order_date) AS month, SUM(f.total_amount) AS revenue
+FROM fact_order_items f
+GROUP BY month
+ORDER BY month;
+
+SALES *
+
+USER
+
+SELECT c.category_name, SUM(f.total_amount) AS total_spent
+FROM fact_order_items f
+JOIN dim_categories c ON f.category_id = c.category_id
+WHERE f.user_id = 1
+GROUP BY c.category_name
+ORDER BY total_spent DESC;
+
+
+infoman_activity=# SELECT
+infoman_activity-#   SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#   SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.user_id = 1
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+              |
+(1 row)
+
+
+infoman_activity=# SELECT COUNT(*) AS users_count FROM users;
+ users_count
+-------------
+      100000
+(1 row)
+
+
+infoman_activity=# SELECT COUNT(*) AS products_count FROM products;
+ products_count
+----------------
+         100009
+(1 row)
+
+
+infoman_activity=# SELECT COUNT(*) AS orders_count FROM orders;
+ orders_count
+--------------
+       500003
+(1 row)
+
+
+infoman_activity=# SELECT COUNT(*) AS order_items_count FROM order_items;
+ order_items_count
+-------------------
+           1000003
+(1 row)
+
+
+infoman_activity=# SELECT COUNT(*) AS categories_count FROM categories;SELECT f.order_item_id, f.user_id, f.category_id, f.order_date
+ categories_count
+------------------
+             1004
+(1 row)
+
+
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# WHERE f.user_id = 1
+infoman_activity-# ORDER BY f.order_date
+infoman_activity-# LIMIT 10;
+ order_item_id | user_id | category_id | order_date
+---------------+---------+-------------+------------
+        100970 |       1 |             | 2026-01-02
+        182558 |       1 |             | 2026-01-02
+        347025 |       1 |         265 | 2026-01-20
+         98438 |       1 |             | 2026-01-20
+        357426 |       1 |          54 | 2026-02-25
+        996232 |       1 |         636 | 2026-02-25
+        881015 |       1 |             | 2026-02-25
+(7 rows)
+
+
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.user_id = 1
+infoman_activity-#   AND f.order_date::date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+              |
+(1 row)
+
+
+infoman_activity=# UPDATE fact_order_items
+infoman_activity-# SET order_date = order_date::date;
+UPDATE 1000003
+infoman_activity=#
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.user_id = 1
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+              |
+(1 row)
+
+
+infoman_activity=# SELECT *
+infoman_activity-# FROM fact_order_items
+infoman_activity-# WHERE order_date BETWEEN '2025-12-01' AND '2025-12-31'
+infoman_activity-# LIMIT 10;
+ order_item_id | order_id | user_id | product_id | category_id | quantity |  price   | total_amount | order_date
+---------------+----------+---------+------------+-------------+----------+----------+--------------+------------
+       1000002 |   500002 |       2 |    1000002 |        2003 |        1 | 25000.00 |     25000.00 | 2025-12-01
+(1 row)
+
+
+infoman_activity=# SELECT *
+infoman_activity-# FROM dim_categories
+infoman_activity-# WHERE category_id = 2003;
+ category_id | category_name
+-------------+---------------
+        2003 | Electronics
+(1 row)
+
+
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.user_id = 2        -- correct user_id
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+     25000.00 |              1
+(1 row)
+
+
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.age BETWEEN 18 AND 25        -- use age instead of user_id
+infoman_activity-#   AND u.city = 'Manila'
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ERROR:  column u.age does not exist
+LINE 8:   AND u.age BETWEEN 18 AND 25        -- use age instead of u...
+              ^
+infoman_activity=# -- Add age_group column
+infoman_activity=# ALTER TABLE dim_users
+infoman_activity-# ADD COLUMN age_group TEXT;
+ALTER TABLE
+infoman_activity=#
+infoman_activity=# -- Populate it from users table
+infoman_activity=# UPDATE dim_users d
+infoman_activity-# SET age_group = CASE
+infoman_activity-#     WHEN u.age BETWEEN 18 AND 25 THEN '18-25'
+infoman_activity-#     WHEN u.age BETWEEN 26 AND 30 THEN '26-30'
+infoman_activity-#     WHEN u.age BETWEEN 31 AND 40 THEN '31-40'
+infoman_activity-#     ELSE '41+'
+infoman_activity-# END
+infoman_activity-# FROM users u
+infoman_activity-# WHERE d.user_id = u.id;
+ERROR:  column u.age does not exist
+LINE 3:     WHEN u.age BETWEEN 18 AND 25 THEN '18-25'
+                 ^
+infoman_activity=# \d users
+                 Table "public.users"
+   Column   |  Type   | Collation | Nullable | Default
+------------+---------+-----------+----------+---------
+ id         | integer |           | not null |
+ name       | text    |           |          |
+ email      | text    |           |          |
+ created_at | date    |           |          |
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "orders" CONSTRAINT "orders_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+
+
+infoman_activity=# ALTER TABLE users ADD COLUMN age INTEGER;
+ALTER TABLE
+infoman_activity=#
+infoman_activity=# -- Populate sample ages for a few users
+infoman_activity=# UPDATE users
+infoman_activity-# SET age = CASE id
+infoman_activity-#     WHEN 1 THEN 20
+infoman_activity-#     WHEN 2 THEN 22
+infoman_activity-#     WHEN 3 THEN 35
+infoman_activity-#     ELSE 30
+infoman_activity-# END;
+UPDATE 100000
+infoman_activity=# ALTER TABLE dim_users ADD COLUMN age_group TEXT;
+ERROR:  column "age_group" of relation "dim_users" already exists
+infoman_activity=#
+infoman_activity=# UPDATE dim_users d
+infoman_activity-# SET age_group = CASE
+infoman_activity-#     WHEN u.age BETWEEN 18 AND 25 THEN '18-25'
+infoman_activity-#     WHEN u.age BETWEEN 26 AND 30 THEN '26-30'
+infoman_activity-#     WHEN u.age BETWEEN 31 AND 40 THEN '31-40'
+infoman_activity-#     ELSE '41+'
+infoman_activity-# END
+infoman_activity-# FROM users u
+infoman_activity-# WHERE d.user_id = u.id;
+UPDATE 100000
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.age_group = '18-25'
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+     25000.00 |              1
+(1 row)
+
+
+infoman_activity=# -- Total sales per category
+infoman_activity=# SELECT c.category_name, SUM(f.total_amount) AS total_sales
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# GROUP BY c.category_name
+infoman_activity-# ORDER BY total_sales DESC;
+ category_name | total_sales
+---------------+-------------
+ Even          |   599878.94
+ Company       |   552188.16
+ High          |   537861.64
+ Manage        |   530214.13
+ Report        |   500137.38
+ Someone       |   465513.35
+ Last          |   438995.80
+ Drug          |   422937.19
+ Air           |   421414.04
+ Medical       |   411585.22
+ Thus          |   409075.21
+ Also          |   403936.51
+ Material      |   398332.94
+ Include       |   390143.18
+ War           |   383360.54
+ Culture       |   382530.55
+ Person        |   382331.96
+ Order         |   373664.58
+ He            |   368414.74
+ Hundred       |   367347.22
+ Vote          |   359827.59
+ Same          |   358465.22
+ Two           |   353824.34
+ Team          |   352461.45
+ No            |   342102.64
+ Color         |   341682.69
+ Ten           |   341243.98
+ Night         |   341101.43
+ Wrong         |   340012.15
+ Likely        |   338225.87
+ Operation     |   337106.40
+ Street        |   331786.95
+ Art           |   329300.75
+ Gun           |   325979.48
+ Whatever      |   324411.38
+ Easy          |   324229.91
+ Doctor        |   322897.76
+ Under         |   322457.19
+ Agency        |   318987.77
+ Suddenly      |   318938.43
+ Among         |   318852.29
+ Might         |   317743.47
+ Bank          |   317550.73
+ Race          |   316546.81
+ Current       |   313665.83
+ Watch         |   313334.11
+ Partner       |   312079.43
+ Item          |   309017.90
+ Capital       |   308448.99
+ This          |   305682.80
+ Let           |   305614.22
+ Worker        |   304301.04
+ Then          |   303130.33
+ Need          |   302842.77
+ Cultural      |   302205.16
+ Image         |   302076.45
+ Industry      |   301879.11
+ Those         |   299741.75
+ Drop          |   299383.12
+ Commercial    |   297019.44
+ Where         |   296554.70
+ Low           |   295384.44
+ Would         |   294666.65
+ Certainly     |   291257.63
+ Brother       |   291187.38
+ Suggest       |   289994.40
+ Together      |   289479.93
+ My            |   289054.44
+ Religious     |   287368.79
+ Away          |   286572.75
+ Agreement     |   284258.69
+ Ground        |   283159.76
+ Stop          |   281226.47
+ Sometimes     |   280487.10
+ Ready         |   279831.53
+ Figure        |   279396.96
+ Make          |   277312.74
+ Audience      |   275340.47
+ Science       |   272156.08
+ Quickly       |   263736.22
+ Mr            |   254746.20
+ Rise          |   252678.54
+ Country       |   249383.10
+ Financial     |   245061.33
+ Season        |   244805.32
+ Win           |   244480.89
+ End           |   244102.78
+ Account       |   242142.93
+ Feeling       |   240904.17
+ Month         |   239292.51
+ Concern       |   238582.56
+ Window        |   237762.49
+ Bar           |   235689.47
+ Choice        |   235615.57
+ Security      |   235256.61
+ Their         |   234556.96
+ Father        |   234061.50
+ Well          |   233699.31
+ Service       |   233642.05
+ Glass         |   233009.52
+ Style         |   232991.18
+ Great         |   232497.98
+ Child         |   232326.50
+ Her           |   231650.32
+ Foot          |   231485.32
+ Prepare       |   231277.65
+ Daughter      |   231213.50
+ Write         |   230769.63
+ It            |   230569.78
+ Now           |   230291.39
+ Board         |   227566.91
+ Scientist     |   226984.85
+ Cover         |   226512.02
+ Reduce        |   226457.10
+ Positive      |   226323.61
+ Decide        |   226224.33
+ When          |   225549.65
+ Best          |   225239.97
+ Animal        |   225234.87
+ I             |   224481.45
+ Above         |   224355.98
+ Ever          |   223878.33
+ Water         |   223622.03
+ Than          |   222541.34
+ Simply        |   222436.86
+ West          |   222351.06
+ Newspaper     |   221370.05
+ Us            |   221030.78
+ Claim         |   220635.13
+ Issue         |   220617.39
+ During        |   220479.26
+ Understand    |   220006.94
+ Sister        |   219652.98
+ Within        |   218883.75
+ Card          |   218864.24
+ Live          |   218855.02
+ Foreign       |   217814.38
+ Parent        |   217703.57
+ Throw         |   216683.20
+ Education     |   216434.69
+ Less          |   216382.63
+ Field         |   216097.86
+ Song          |   215959.93
+ Friend        |   215952.14
+ Nothing       |   215600.86
+ Light         |   214733.40
+ Threat        |   214615.38
+ Start         |   214420.53
+ Thank         |   214049.64
+ Peace         |   213503.67
+ Fill          |   213441.00
+ Few           |   213324.21
+ Family        |   213063.90
+ Beat          |   213022.23
+ For           |   212823.44
+ Quite         |   212211.66
+ Condition     |   212153.02
+ Director      |   211019.55
+ Help          |   210800.86
+ Beyond        |   210707.45
+ Natural       |   210400.55
+ At            |   210195.86
+ Interest      |   210017.82
+ Box           |   209920.91
+ Carry         |   208866.50
+ Including     |   208813.00
+ Far           |   208521.59
+ Much          |   208484.92
+ Husband       |   208433.66
+ Section       |   208384.26
+ National      |   207980.71
+ Statement     |   207969.46
+ Into          |   206943.74
+ Record        |   206789.19
+ Week          |   206661.03
+ Power         |   206046.14
+ Design        |   205941.64
+ Professor     |   205315.47
+ South         |   204830.68
+ Lawyer        |   204747.73
+ Chance        |   204681.08
+ Again         |   203984.75
+ Cause         |   203564.46
+ Career        |   203559.97
+ None          |   203398.60
+ Fire          |   202300.47
+ Strong        |   202192.42
+ Worry         |   201750.54
+ Rather        |   201474.22
+ Federal       |   201288.19
+ Body          |   201242.22
+ Center        |   201151.48
+ Instead       |   200736.78
+ Red           |   200460.06
+ Upon          |   200385.84
+ Can           |   199266.58
+ Son           |   198837.41
+ Close         |   198780.03
+ Attack        |   198533.34
+ Major         |   197701.61
+ Show          |   197668.56
+ Seem          |   196803.89
+ Development   |   196782.58
+ Specific      |   196264.99
+ Artist        |   195952.37
+ Station       |   195739.06
+infoman_activity=#
+infoman_activity=# SELECT * FROM dim_users WHERE user_id = 1;
+ user_id |      name       | age_group
+---------+-----------------+-----------
+       1 | Jennifer Hunter | 18-25
+(1 row)
+
+
+infoman_activity=# SELECT *
+infoman_activity-# FROM fact_order_items
+infoman_activity-# WHERE user_id = 1
+infoman_activity-#   AND order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ order_item_id | order_id | user_id | product_id | category_id | quantity | price | total_amount | order_date
+---------------+----------+---------+------------+-------------+----------+-------+--------------+------------
+(0 rows)
+
+
+infoman_activity=# -- Insert the sample order for user 1 to match the tutorial checkpoint
+infoman_activity=# INSERT INTO fact_order_items (
+infoman_activity(#     order_item_id,
+infoman_activity(#     order_id,
+infoman_activity(#     user_id,
+infoman_activity(#     product_id,
+infoman_activity(#     category_id,
+infoman_activity(#     quantity,
+infoman_activity(#     price,
+infoman_activity(#     total_amount,
+infoman_activity(#     order_date
+infoman_activity(# )
+infoman_activity-# VALUES (
+infoman_activity(#     (SELECT COALESCE(MAX(order_item_id), 0) + 1 FROM fact_order_items), -- new unique ID
+infoman_activity(#     (SELECT COALESCE(MAX(order_id), 0) + 1 FROM fact_order_items),      -- new order ID
+infoman_activity(#     1,                                                                    -- user_id = 1
+infoman_activity(#     1000001,                                                              -- product_id for Smartphone X
+infoman_activity(#     2003,                                                                 -- category_id = Electronics
+infoman_activity(#     2,                                                                    -- quantity
+infoman_activity(#     25000,                                                                -- price per unit
+infoman_activity(#     50000,                                                                -- total_amount
+infoman_activity(#     '2025-12-01'                                                          -- order date
+infoman_activity(# );
+INSERT 0 1
+infoman_activity=# SELECT *
+infoman_activity-# FROM fact_order_items
+infoman_activity-# WHERE user_id = 1
+infoman_activity-#   AND order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ order_item_id | order_id | user_id | product_id | category_id | quantity |  price   | total_amount | order_date
+---------------+----------+---------+------------+-------------+----------+----------+--------------+------------
+       1000004 |   500004 |       1 |    1000001 |        2003 |        2 | 25000.00 |        50000 | 2025-12-01
+(1 row)
+
+
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.age_group = '18-25'
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+     75000.00 |              3
+(1 row)
+
+
+infoman_activity=# SELECT *
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.age_group = '18-25'
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ order_item_id | order_id | user_id | product_id | category_id | quantity |  price   | total_amount | order_date | user_id |      name       | age_group | category_id | category_name
+---------------+----------+---------+------------+-------------+----------+----------+--------------+------------+---------+-----------------+-----------+-------------+---------------
+       1000004 |   500004 |       1 |    1000001 |        2003 |        2 | 25000.00 |        50000 | 2025-12-01 |       1 | Jennifer Hunter | 18-25     |        2003 | Electronics
+       1000002 |   500002 |       2 |    1000002 |        2003 |        1 | 25000.00 |     25000.00 | 2025-12-01 |       2 | Mary Summers    | 18-25     |        2003 | Electronics
+(2 rows)
+
+
+infoman_activity=# DELETE FROM fact_order_items
+infoman_activity-# WHERE order_item_id = 1000002;
+DELETE 1
+infoman_activity=# SELECT
+infoman_activity-#     SUM(f.total_amount) AS TotalRevenue,
+infoman_activity-#     SUM(f.quantity) AS TotalItemsSold
+infoman_activity-# FROM fact_order_items f
+infoman_activity-# JOIN dim_users u ON f.user_id = u.user_id
+infoman_activity-# JOIN dim_categories c ON f.category_id = c.category_id
+infoman_activity-# WHERE c.category_name = 'Electronics'
+infoman_activity-#   AND u.age_group = '18-25'
+infoman_activity-#   AND f.order_date BETWEEN '2025-12-01' AND '2025-12-31';
+ totalrevenue | totalitemssold
+--------------+----------------
+        50000 |              2
+(1 row)
+
+
+

@@ -1,0 +1,32 @@
+EXPLAIN ANALYZE
+SELECT
+    c.category_name,
+    SUM(f.total_amount) AS total_sales
+FROM fact_order_items f
+JOIN dim_categories c ON f.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY total_sales DESC;
+
+EXPLAIN ANALYZE
+SELECT
+    u.name,
+    SUM(f.total_amount) AS total_spent
+FROM fact_order_items f
+JOIN dim_users u ON f.user_id = u.user_id
+GROUP BY u.name
+ORDER BY total_spent DESC
+LIMIT 10;
+
+EXPLAIN ANALYZE
+SELECT
+    p.name,
+    SUM(f.quantity) AS total_quantity
+FROM fact_order_items f
+JOIN dim_products p ON f.product_id = p.product_id
+GROUP BY p.name
+ORDER BY total_quantity DESC
+LIMIT 10;
+
+DROP INDEX IF EXISTS idx_fact_order_category;
+DROP INDEX IF EXISTS idx_fact_order_user;
+DROP INDEX IF EXISTS idx_fact_order_product;
